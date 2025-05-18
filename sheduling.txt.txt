@@ -1,0 +1,85 @@
+def fcfs(processes):
+    print("\n--- First-Come, First-Served (FCFS) Scheduling ---")
+    processes.sort(key=lambda x: x[1])  # sort by arrival time
+    current_time = 0
+    print("PID\tAT\tBT\tWT\tTAT")
+    for pid, at, bt, _ in processes:
+        start_time = max(current_time, at)
+        wt = start_time - at
+        tat = wt + bt
+        print(f"{pid}\t{at}\t{bt}\t{wt}\t{tat}")
+        current_time = start_time + bt
+
+
+def sjf(processes):
+    print("\n--- Shortest Job First (SJF) Scheduling ---")
+    n = len(processes)
+    completed = []
+    time = 0
+    print("PID\tAT\tBT\tWT\tTAT")
+    while len(completed) < n:
+        ready = [p for p in processes if p[1] <= time and p not in completed]
+        if ready:
+            shortest = min(ready, key=lambda x: x[2])  # burst time
+            wt = time - shortest[1]
+            tat = wt + shortest[2]
+            print(f"{shortest[0]}\t{shortest[1]}\t{shortest[2]}\t{wt}\t{tat}")
+            time += shortest[2]
+            completed.append(shortest)
+        else:
+            time += 1
+
+
+def priority_scheduling(processes):
+    print("\n--- Priority Scheduling ---")
+    n = len(processes)
+    completed = []
+    time = 0
+    print("PID\tAT\tBT\tPR\tWT\tTAT")
+    while len(completed) < n:
+        ready = [p for p in processes if p[1] <= time and p not in completed]
+        if ready:
+            highest_priority = min(ready, key=lambda x: x[3])  # lower number = higher priority
+            wt = time - highest_priority[1]
+            tat = wt + highest_priority[2]
+            print(f"{highest_priority[0]}\t{highest_priority[1]}\t{highest_priority[2]}\t{highest_priority[3]}\t{wt}\t{tat}")
+            time += highest_priority[2]
+            completed.append(highest_priority)
+        else:
+            time += 1
+
+
+# === Main Program ===
+def main():
+    processes = []
+    n = int(input("Enter number of processes: "))
+    for i in range(n):
+        pid = i + 1
+        at = int(input(f"Enter Arrival Time for P{pid}: "))
+        bt = int(input(f"Enter Burst Time for P{pid}: "))
+        pr = int(input(f"Enter Priority for P{pid} (lower number = higher priority): "))
+        processes.append([pid, at, bt, pr])
+
+    while True:
+        print("\nSelect Scheduling Algorithm:")
+        print("1. First-Come First-Served (FCFS)")
+        print("2. Shortest Job First (SJF)")
+        print("3. Priority Scheduling")
+        print("4. Exit")
+        choice = input("Enter choice (1-4): ")
+
+        if choice == '1':
+            fcfs(processes.copy())
+        elif choice == '2':
+            sjf(processes.copy())
+        elif choice == '3':
+            priority_scheduling(processes.copy())
+        elif choice == '4':
+            print("Exiting...")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+
+if __name__ == "__main__":
+    main()
